@@ -15,14 +15,15 @@ def index():
             method = req1.split(' ')[0]
             path = req1.split(' ')[1]
             host = req1.split('\n')[1]
-            body = req1.split(os.linesep+os.linesep)[-1]
+            # body = req1.split(os.linesep+os.linesep)[-1]
 
             if protocol == 'https':
                 url = 'https://' + host.split(' ')[1] + path
             else:
                 url = 'http://' + host.split(' ')[1] + path
 
-            body = body.split('\n'+'\n')[-1]
+            # body = body.split('\n'+'\n')[-1]
+            body = req1.splitlines()[-1]
             body = body.split('&')
         except:
             return render_template('index.html', alert=1)
