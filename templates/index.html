@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <title>CSRF PoC Generator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <style>
+      body {
+        background-color: #343a40;
+        font-family: "Open Sans", sans-serif;
+      }
+      h1 {
+        color: #ffffff;
+        text-align: center;
+        margin-top: 40px;
+      }
+      h2 {
+        color: #ffffff;
+      }
+      .form-control {
+        background-color: #212529;
+        color: #ffffff;
+        border: none;
+        border-radius: 0;
+      }
+      .form-control:focus {
+        box-shadow: none;
+        border-color: #ffffff;
+        background-color: #212529;
+        color: #ffffff;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        display: block;
+        margin: 0 auto;
+      }
+      .text-center {
+        padding: 30px 0;
+      }
+      .social-links {
+        display: flex;
+        justify-content: center;
+        padding-top: 20px;
+      }
+      .social-links a {
+        padding: 0 10px;
+        color: #ffffff;
+      }
+      .author {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 18px;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+<body style="font-family: 'Quicksand', sans-serif;">
+  <div class="container">
+    <h1 class="text-white">CSRF PoC Generator</h1>
+    <div class="author text-right"><a href="https://github.com/Pyr0sec" target="_blank" style="color: white; text-decoration: none">By Pyr0sec</a></div>
+  <form method="post">
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="checkbox" name="protocol" value="https" checked>
+      <label class="form-check-label text-white" for="protocol">Https</label>
+    </div>
+    <br><br>
+    <textarea class="form-control" name="input_req" rows="15" placeholder="Paste Request here"></textarea>
+    <br>
+    <br>
+    <input class="btn btn-primary" type="submit" value="Generate PoC">
+</form>
+  <h2 class="text-white">PoC:</h2>
+  <textarea class="form-control" id="text-to-copy" name="poc" rows="15">{{ poc }}</textarea>
+</div>
+<div class="social-links">
+    <a href="https://twitter.com/Pyr0sec" target="_blank">
+      <img src="https://www.freepnglogos.com/uploads/twitter-logo-png/twitter-logo-vector-png-clipart-1.png" width="25px" height="25px">
+    </a>
+    <a href="https://github.com/Pyr0sec" target="_blank">
+      <img src="https://cdn.iconscout.com/icon/free/png-512/github-153-675523.png" width="25px" height="25px">
+    </a>
+    <a href="https://www.buymeacoffee.com/pyrosec" target="_blank">
+        <img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee" width="25px" height="25px">
+      </a>
+  </div>
+  <br>
+  {% if alert == 1 %}
+  <script>window.alert("Invalid Request!");</script>
+  {% endif %}
+</body>
+</html>

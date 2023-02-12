@@ -1,0 +1,572 @@
+Metadata-Version: 2.1
+Name: airium
+Version: 0.2.5
+Summary: Easy and quick html builder with natural syntax correspondence (python->html). No templates needed. Serves pure pythonic library with no dependencies.
+Home-page: https://gitlab.com/kamichal/airium
+Author: Michał Kaczmarczyk
+Author-email: michal.s.kaczmarczyk@gmail.com
+Maintainer: Michał Kaczmarczyk
+Maintainer-email: michal.s.kaczmarczyk@gmail.com
+License: MIT license
+Keywords: natural html generator compiler template-less
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: System Administrators
+Classifier: Intended Audience :: Telecommunications Industry
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Programming Language :: Python
+Classifier: Topic :: Database :: Front-Ends
+Classifier: Topic :: Documentation
+Classifier: Topic :: Internet :: WWW/HTTP :: Browsers
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Text Processing :: Markup :: HTML
+Classifier: Topic :: Utilities
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: dev
+Requires-Dist: pdbpp (~=0.10) ; extra == 'dev'
+Requires-Dist: pytest (~=6.2) ; extra == 'dev'
+Requires-Dist: pytest-cov (~=3.0) ; extra == 'dev'
+Requires-Dist: pytest-mock (~=3.6) ; extra == 'dev'
+Provides-Extra: parse
+Requires-Dist: requests (<3,>=2.12.*) ; extra == 'parse'
+Requires-Dist: beautifulsoup4 (<5.0,>=4.10.*) ; extra == 'parse'
+
+## Airium
+
+Bidirectional `HTML`-`python` translator.
+
+[![PyPI version](https://img.shields.io/pypi/v/airium.svg)](https://pypi.python.org/pypi/airium/)
+[![pipeline status](https://gitlab.com/kamichal/airium/badges/master/pipeline.svg)](https://gitlab.com/kamichal/airium/-/commits/master)
+[![coverage report](https://gitlab.com/kamichal/airium/badges/master/coverage.svg)](https://gitlab.com/kamichal/airium/-/commits/master)
+[![PyPI pyversion](https://img.shields.io/pypi/pyversions/AIRIUM.svg)](https://pypi.org/project/airium/)
+[![PyPI license](https://img.shields.io/pypi/l/AIRIUM.svg)](https://pypi.python.org/pypi/airium/)
+[![PyPI status](https://img.shields.io/pypi/status/AIRIUM.svg)](https://pypi.python.org/pypi/airium/)
+
+Key features:
+
+- simple, straight-forward
+- template-less (just the python, you may say goodbye to all the templates)
+- DOM structure is strictly represented by python indentation (with context-managers)
+- gives much cleaner `HTML` than regular templates
+- equipped with reverse translator: `HTML` to python
+- can output either pretty (default) or minified `HTML` code
+
+# Generating `HTML` code in python using `airium`
+
+#### Basic `HTML` page (hello world)
+
+```python
+from airium import Airium
+
+a = Airium()
+
+a('<!DOCTYPE html>')
+with a.html(lang="pl"):
+    with a.head():
+        a.meta(charset="utf-8")
+        a.title(_t="Airium example")
+
+    with a.body():
+        with a.h3(id="id23409231", klass='main_header'):
+            a("Hello World.")
+
+html = str(a)  # casting to string extracts the value
+# or directly to UTF-8 encoded bytes:
+html_bytes = bytes(a)  # casting to bytes is a shortcut to str(a).encode('utf-8')
+
+print(html)
+```
+
+Prints such a string:
+
+```html
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <title>Airium example</title>
+  </head>
+  <body>
+    <h3 id="id23409231" class="main_header">
+      Hello World.
+    </h3>
+  </body>
+</html>
+```
+
+In order to store it as a file, just:
+
+```python
+with open('that/file/path.html', 'wb') as f:
+    f.write(bytes(html))
+```
+
+#### Simple image in a div
+
+```python
+from airium import Airium
+
+a = Airium()
+
+with a.div():
+    a.img(src='source.png', alt='alt text')
+    a('the text')
+
+html_str = str(a)
+print(html_str)
+```
+
+```html
+
+<div>
+    <img src="source.png" alt="alt text"/>
+    the text
+</div>
+```
+
+#### Table
+
+```python
+from airium import Airium
+
+a = Airium()
+
+with a.table(id='table_372'):
+    with a.tr(klass='header_row'):
+        a.th(_t='no.')
+        a.th(_t='Firstname')
+        a.th(_t='Lastname')
+
+    with a.tr():
+        a.td(_t='1.')
+        a.td(id='jbl', _t='Jill')
+        a.td(_t='Smith')  # can use _t or text
+
+    with a.tr():
+        a.td(_t='2.')
+        a.td(_t='Roland', id='rmd')
+        a.td(_t='Mendel')
+
+table_str = str(a)
+print(table_str)
+
+# To store it to a file:
+with open('/tmp/airium_www.example.com.py') as f:
+    f.write(table_str)
+```
+
+Now `table_str` contains such a string:
+
+```html
+
+<table id="table_372">
+  <tr class="header_row">
+    <th>no.</th>
+    <th>Firstname</th>
+    <th>Lastname</th>
+  </tr>
+  <tr>
+    <td>1.</td>
+    <td id="jbl">Jill</td>
+    <td>Smith</td>
+  </tr>
+  <tr>
+    <td>2.</td>
+    <td id="rmd">Roland</td>
+    <td>Mendel</td>
+  </tr>
+</table>
+```
+
+### Chaining shortcut for elements with only one child
+
+_New in version 0.2.2_
+
+Having a structure with large number of `with` statements:
+
+```python
+from airium import Airium
+
+a = Airium()
+
+with a.article():
+    with a.table():
+        with a.thead():
+            with a.tr():
+                a.th(_t='Column 1')
+                a.th(_t='Column 2')
+        with a.tbody():
+            with a.tr():
+                with a.td():
+                    a.strong(_t='Value 1')
+                a.td(_t='Value 2')
+
+table_str = str(a)
+print(table_str)
+```
+
+You may use a shortcut that is equivalent to:
+
+```python
+from airium import Airium
+
+a = Airium()
+
+with a.article().table():
+    with a.thead().tr():
+        a.th(_t="Column 1")
+        a.th(_t="Column 2")
+    with a.tbody().tr():
+        a.td().strong(_t="Value 1")
+        a.td(_t="Value 2")
+
+table_str = str(a)
+print(table_str)
+```
+
+```html
+
+<article>
+  <table>
+    <thead>
+      <tr>
+        <th>Column 1</th>
+        <th>Column 2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>Value 1</strong>
+        </td>
+        <td>Value 2</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+```
+
+# Options
+
+### Pretty or Minify
+
+By default, airium biulds `HTML` code indented with spaces and with line breaks being line feed `\n` characters.
+It can be changed while creating an `Airium` instance. In general all avaliable arguments whit their default values are:
+
+```python
+a = Airium(
+    base_indent='  ',  # str
+    current_level=0,  # int
+    source_minify=False,  # bool
+    source_line_break_character="\n",  # str
+)
+```
+
+#### minify
+
+That's a mode when size of the code is minimized, i.e. contains as less whitespaces as it's possible.
+The option can be enabled with `source_minify` argument, i.e.:
+
+```python
+a = Airium(source_minify=True)
+```
+
+In case if you need to explicitly add a line break in the source code (not the `<br/>`):
+
+```python
+a = Airium(source_minify=True)
+a.h1(_t="Here's your table")
+with a.table():
+    with a.tr():
+        a.break_source_line()
+        a.th(_t="Cell 11")
+        a.th(_t="Cell 12")
+    with a.tr():
+        a.break_source_line()
+        a.th(_t="Cell 21")
+        a.th(_t="Cell 22")
+    a.break_source_line()
+a.p(_t="Another content goes here")
+```
+
+Will result with such a code:
+
+```html
+<h1>Here's your table</h1><table><tr>
+<th>Cell 11</th><th>Cell 12</th></tr><tr>
+<th>Cell 21</th><th>Cell 22</th></tr>
+</table><p>Another content goes here</p>
+```
+
+Note that the `break_source_line` cannot be used
+in [context manager chains](#chaining-shortcut-for-elements-with-only-one-child).
+
+#### indent style
+
+The default indent of the generated HTML code has two spaces per each indent level.
+You can change it to `\t` or 4 spaces by setting `Airium` constructor argument, e.g.:
+
+```python
+a = Airium(base_indent="\t")  # one tab symbol
+a = Airium(base_indent="    ")  # 4 spaces per each indentation level
+a = Airium(base_indent=" ")  # 1 space per one level
+# pick one of the above statements, it can be mixed with other arguments
+```
+
+Note that this setting is ignored when `source_minify` argument is set to `True` (see above).
+
+There is a special case when you set the base indent to empty string. It would disable indentation,
+but line breaks will be still added. In order to get rid of line breaks, check the `source_minify` argument.
+
+#### indent level
+
+The `current_level` being an integer can be set to non-negative
+value, wich will cause `airium` to start indentation with level offset given by the number.
+
+#### line break character
+
+By default, just a line feed (`\n`) is used for terminating lines of the generated code.
+You can change it to different style, e.g. `\r\n` or `\r` by setting `source_line_break_character` to the desired value.
+
+```python
+a = Airium(source_line_break_character="\r\n")  # windows' style
+```
+
+Note that the setting has no effect when `source_minify` argument is set to `True` (see above).
+
+# Using airium with web-frameworks
+
+Airium can be used with frameworks like Flask or Django. It can completely replace
+template engines, reducing code-files scater, which may bring better code organization, and some other reasons.
+
+Here is an example of using airium with django. It implements reusable `basic_body` and a view called `index`.
+
+```python
+# file: your_app/views.py
+import contextlib
+import inspect
+
+from airium import Airium
+from django.http import HttpResponse
+
+
+@contextlib.contextmanager
+def basic_body(a: Airium, useful_name: str = ''):
+    """Works like a Django/Ninja template."""
+
+    a('<!DOCTYPE html>')
+    with a.html(lang='en'):
+        with a.head():
+            a.meta(charset='utf-8')
+            a.meta(content='width=device-width, initial-scale=1', name='viewport')
+            # do not use CSS from this URL in a production, it's just for an educational purpose
+            a.link(href='https://unpkg.com/@picocss/pico@1.4.1/css/pico.css', rel='stylesheet')
+            a.title(_t=f'Hello World')
+
+        with a.body():
+            with a.div():
+                with a.nav(klass='container-fluid'):
+                    with a.ul():
+                        with a.li():
+                            with a.a(klass='contrast', href='./'):
+                                a.strong(_t="⌨ Foo Bar")
+                    with a.ul():
+                        with a.li():
+                            a.a(klass='contrast', href='#', **{'data-theme-switcher': 'auto'}, _t='Auto')
+                        with a.li():
+                            a.a(klass='contrast', href='#', **{'data-theme-switcher': 'light'}, _t='Light')
+                        with a.li():
+                            a.a(klass='contrast', href='#', **{'data-theme-switcher': 'dark'}, _t='Dark')
+
+                with a.header(klass='container'):
+                    with a.hgroup():
+                        a.h1(_t=f"You're on the {useful_name}")
+                        a.h2(_t="It's a page made by our automatons with a power of steam engines.")
+
+            with a.main(klass='container'):
+                yield  # This is the point where main content gets inserted
+
+            with a.footer(klass='container'):
+                with a.small():
+                    margin = 'margin: auto 10px;'
+                    a.span(_t='© Airium HTML generator example', style=margin)
+
+            # do not use JS from this URL in a production, it's just for an educational purpose
+            a.script(src='https://picocss.com/examples/js/minimal-theme-switcher.js')
+
+
+def index(request) -> HttpResponse:
+    a = Airium()
+    with basic_body(a, f'main page: {request.path}'):
+        with a.article():
+            a.h3(_t="Hello World from Django running Airium")
+            with a.p().small():
+                a("This bases on ")
+                with a.a(href="https://picocss.com/examples/company/"):
+                    a("Pico.css / Company example")
+
+            with a.p():
+                a("Instead of a HTML template, airium has been used.")
+                a("The whole body is generated by a template "
+                  "and the article code looks like that:")
+
+            with a.code().pre():
+                a(inspect.getsource(index))
+
+    return HttpResponse(bytes(a))  # from django.http import HttpResponse
+```
+
+Route it in `urls.py` just like a regular view:
+
+```python
+# file: your_app/urls.py
+from django.contrib import admin
+from django.urls import path
+
+import your_app
+
+urlpatterns = [
+    path('index/', your_app.views.index),
+    path('admin/', admin.site.urls),
+]
+```
+
+The result ing web page on my machine looks like that:
+
+![Airium/Django templateless example](airium_django_example.png)
+
+# Reverse translation
+
+Airium is equipped with a transpiler `[HTML -> py]`.
+It generates python code out of a given `HTML` string.
+
+### Using reverse translator as a binary:
+
+Ensure you have [installed](#installation) `[parse]` extras. Then call in command line:
+
+```bash
+airium http://www.example.com
+```
+
+That will fetch the document and translate it to python code.
+The code calls `airium` statements that reproduce the `HTML` document given.
+It may give a clue - how to define `HTML` structure for a given
+web page using `airium` package.
+
+To store the translation's result into a file:
+
+```bash
+airium http://www.example.com > /tmp/airium_example_com.py
+```
+
+You can also parse local `HTML` files:
+
+```bash
+airium /path/to/your_file.html > /tmp/airium_my_file.py
+```
+
+You may also try to parse your Django templates. I'm not sure if it works,
+but there will be probably not much to fix.
+
+### Using reverse translator as python code:
+
+```python
+from airium import from_html_to_airium
+
+# assume we have such a page given as a string:
+html_str = """\
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <title>Airium example</title>
+  </head>
+  <body>
+    <h3 id="id23409231" class="main_header">
+      Hello World.
+    </h3>
+  </body>
+</html>
+"""
+
+# to convert the html into python, just call:
+
+py_str = from_html_to_airium(html_str)
+
+# airium tests ensure that the result of the conversion is equal to the string:
+assert py_str == """\
+#!/usr/bin/env python
+# File generated by reverse AIRIUM translator (version 0.2.5).
+# Any change will be overridden on next run.
+# flake8: noqa E501 (line too long)
+
+from airium import Airium
+
+a = Airium()
+
+a('<!DOCTYPE html>')
+with a.html(lang='pl'):
+    with a.head():
+        a.meta(charset='utf-8')
+        a.title(_t='Airium example')
+    with a.body():
+        a.h3(klass='main_header', id='id23409231', _t='Hello World.')
+"""
+```
+
+### <a name="transpiler_limitations">Transpiler limitations</a>
+
+> so far in version 0.2.2:
+
+- result of translation does not keep exact amount of leading whitespaces
+  within `<pre>` tags. They come over-indented in python code.
+
+This is not however an issue when code is generated from python to `HTML`.
+
+- although it keeps the proper tags structure, the transpiler does not
+  chain all the `with` statements, so in some cases the generated
+  code may be much indented.
+
+- it's not too fast
+
+# <a name="installation">Installation</a>
+
+If you need a new virtual environment, call:
+
+```bash
+virtualenv venv
+source venv/bin/activate
+```
+
+Having it activated - you may install airium like this:
+
+```bash
+pip install airium
+```
+
+In order to use reverse translation - two additional packages are needed, run:
+
+```bash
+pip install airium[parse]
+```
+
+Then check if the transpiler works by calling:
+
+```bash
+airium --help
+```
+
+> Enjoy!
