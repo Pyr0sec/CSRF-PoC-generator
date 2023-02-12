@@ -22,7 +22,7 @@ def index():
             else:
                 url = 'http://' + host.split(' ')[1] + path
 
-            body = body.split('\n\n')[-1]
+            body = body.split('\n'+'\n')[-1]
             body = body.split('&')
         except:
             return render_template('index.html', alert=1)
