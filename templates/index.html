@@ -21,11 +21,14 @@
       h2 {
         color: #ffffff;
       }
+      .form-rounded {
+        border-radius: 1rem;
+      }
       .form-control {
         background-color: #212529;
         color: #ffffff;
         border: none;
-        border-radius: 0;
+        border-radius: 5px;
       }
       .form-control:focus {
         box-shadow: none;
@@ -70,7 +73,7 @@
       <label class="form-check-label text-white" for="protocol">Https</label>
     </div>
     <br><br>
-    <textarea class="form-control" name="input_req" rows="15" placeholder="Paste Request here"></textarea>
+    <textarea class="form-control form-rounded" name="input_req" rows="15" placeholder="Paste Request here"></textarea>
     <br>
     <br>
     <input class="btn btn-primary" type="submit" value="Generate PoC">
